@@ -14,7 +14,10 @@
 	speed = XENO_SPEED_RUNNER
 	attack_delay = -4
 
-	available_strains = list(/datum/xeno_strain/acider)
+		available_strains = list(
+		/datum/xeno_strain/Acider,
+		/datum/xeno_strain/Demon,
+	)
 	behavior_delegate_type = /datum/behavior_delegate/runner_base
 	evolves_to = list(XENO_CASTE_LURKER)
 	deevolves_to = list(XENO_CASTE_LARVA)
