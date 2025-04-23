@@ -70,6 +70,10 @@
 	var/turf/temp = runner_user.loc
 	var/list/telegraph_atom_list = list()
 
+		// Prevent targeting the front-facing direction
+	if (facing == runner_user.dir)
+		return
+
 	for (var/step in 0 to 1)
 		temp = get_step(turf, facing)
 		if(facing in GLOB.diagonals) // check if it goes through corners
