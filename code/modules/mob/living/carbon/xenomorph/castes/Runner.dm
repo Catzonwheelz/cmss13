@@ -14,8 +14,8 @@
 	speed = XENO_SPEED_RUNNER
 	attack_delay = -4
 
-		available_strains = list(
-		/datum/xeno_strain/Acider,
+	available_strains = list(
+		/datum/xeno_strain/acider,
 		/datum/xeno_strain/Demon,
 	)
 	behavior_delegate_type = /datum/behavior_delegate/runner_base
