@@ -47,3 +47,17 @@
 	action_type = XENO_ACTION_CLICK
 	ability_primacy = XENO_PRIMARY_ACTION_2
 	var/minimal_acid = 200
+
+//Demon strain
+/datum/action/xeno_action/onclick/accelerate
+	name = "Accelerate"
+	action_icon_state = "rav_enrage"
+	macro_path = /datum/action/xeno_action/verb/verb_accelerate
+	action_type = XENO_ACTION_CLICK
+	ability_primacy = XENO_PRIMARY_ACTION_1
+	xeno_cooldown = 10 SECONDS
+	plasma_cost = 0
+
+//config
+	var/speed_buff = 0.50
+	var/buff_duration = 6 SECONDS

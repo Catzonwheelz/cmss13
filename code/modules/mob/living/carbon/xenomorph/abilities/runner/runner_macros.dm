@@ -25,3 +25,10 @@
 	set hidden = TRUE
 	var/action_name = "For the Hive!"
 	handle_xeno_macro(src, action_name)
+//demon strain
+/datum/action/xeno_action/verb/verb_accelerate()
+	set category = "Alien"
+	set name = "Accelerate"
+	set hidden = TRUE
+	var/action_name = "Accelerate"
+	handle_xeno_macro(src, action_name)
