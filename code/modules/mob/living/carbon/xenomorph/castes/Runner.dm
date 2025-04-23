@@ -16,7 +16,7 @@
 
 	available_strains = list(
 		/datum/xeno_strain/acider,
-		/datum/xeno_strain/Demon,
+		/datum/xeno_strain/demon,
 	)
 	behavior_delegate_type = /datum/behavior_delegate/runner_base
 	evolves_to = list(XENO_CASTE_LURKER)
