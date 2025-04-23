@@ -8,7 +8,8 @@
 		/datum/action/xeno_action/activable/runner_skillshot,
 	)
 	actions_to_add = list(
-		/datum/action/xeno_action/onclick/accelerate
+		/datum/action/xeno_action/onclick/accelerate,
+		/datum/action/xeno_action/activable/Tail_scythe,
 	)
 
 	behavior_delegate_type = /datum/behavior_delegate/runner_base
@@ -50,3 +51,64 @@
 		xeno.speed_modifier += speed_buff
 		xeno.recalculate_speed()
 		to_chat(xeno, SPAN_XENOHIGHDANGER("We feel our speed wane!"))
+
+//Tail scythe
+/datum/action/xeno_action/activable/Tail_scythe/use_ability(atom/target_atom)
+	var/mob/living/carbon/xenomorph/runner_user = owner
+
+	if (!action_cooldown_check())
+		return
+
+	if (!runner_user.check_state())
+		return
+
+	// Get line of turfs
+	var/list/turf/target_turfs = list()
+
+	var/facing = Get_Compass_Dir(runner_user, target_atom)
+	var/turf/turf = runner_user.loc
+	var/turf/temp = runner_user.loc
+	var/list/telegraph_atom_list = list()
+
+	for (var/step in 0 to 1)
+		temp = get_step(turf, facing)
+		if(facing in GLOB.diagonals) // check if it goes through corners
+			var/reverse_face = GLOB.reverse_dir[facing]
+
+			var/turf/back_left = get_step(temp, turn(reverse_face, 45))
+			var/turf/back_right = get_step(temp, turn(reverse_face, -45))
+			if((!back_left || back_left.density) && (!back_right || back_right.density))
+				break
+		if(!temp || temp.density || temp.opacity)
+			break
+
+		turf = temp
+		target_turfs += turf
+		telegraph_atom_list += new /obj/effect/xenomorph/xeno_telegraph/red(turf, 0.25 SECONDS)
+
+	// Extract our 'optimal' turf, if it exists
+	if (length(target_turfs) >= 2)
+		runner_user.animation_attack_on(target_turfs[length(target_turfs)], 15)
+
+	// Hmm today I will kill a marine while looking away from them
+	runner_user.face_atom(target_atom)
+	runner_user.emote("roar")
+	runner_user.visible_message(SPAN_XENODANGER("[runner_user] sweeps its claws through the area in front of it!"), SPAN_XENODANGER("We sweep our claws through the area in front of us!"))
+
+	// Loop through our turfs, finding any humans there and dealing damage to them
+	for (var/turf/target_turf in target_turfs)
+		for (var/mob/living/carbon/carbon_target in target_turf)
+			if (carbon_target.stat == DEAD)
+				continue
+
+			if (HAS_TRAIT(carbon_target, TRAIT_NESTED))
+				continue
+
+			if(runner_user.can_not_harm(carbon_target))
+				continue
+			runner_user.flick_attack_overlay(carbon_target, "slash")
+			carbon_target.apply_armoured_damage(damage, ARMOR_MELEE, BRUTE)
+			playsound(get_turf(carbon_target), "alien_claw_flesh", 30, TRUE)
+
+	apply_cooldown()
+	return ..()

@@ -61,3 +61,15 @@
 //config
 	var/speed_buff = 0.50
 	var/buff_duration = 6 SECONDS
+
+/datum/action/xeno_action/activable/Tail_scythe
+	name = "Tail Scythe"
+	action_icon_state = "rav_scissor_cut"
+	macro_path = /datum/action/xeno_action/verb/verb_Tail_scythe
+	action_type = XENO_ACTION_CLICK
+	ability_primacy = XENO_PRIMARY_ACTION_2
+	xeno_cooldown = 2 SECONDS
+	plasma_cost = 0
+
+	// Config
+	var/damage = 5

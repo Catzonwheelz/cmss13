@@ -32,3 +32,10 @@
 	set hidden = TRUE
 	var/action_name = "Accelerate"
 	handle_xeno_macro(src, action_name)
+
+/datum/action/xeno_action/verb/verb_Tail_scythe()
+	set category = "Alien"
+	set name = "Tail Scythe"
+	set hidden = TRUE
+	var/action_name = "Tail Scythe"
+	handle_xeno_macro(src, action_name)
