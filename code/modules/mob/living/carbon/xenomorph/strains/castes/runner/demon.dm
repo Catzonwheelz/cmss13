@@ -11,5 +11,7 @@
 	behavior_delegate_type = /datum/behavior_delegate/runner_base
 
 /datum/xeno_strain/demon/apply_strain(mob/living/carbon/xenomorph/runner/runner)
-	runner.speed_modifier += XENO_SPEED_FASTMOD_TIER_10
+	runner.speed_modifier += XENO_SPEED_FASTMOD_TIER_1
+	runner.health_modifier -= XENO_HEALTH_MOD_LARGE
+	runner.damage_modifier += XENO_DAMAGE_MOD_SMALL
 	runner.recalculate_everything()
