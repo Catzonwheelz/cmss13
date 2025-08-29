@@ -245,6 +245,10 @@
 	},
 /turf/open/floor/wood,
 /area/varadero/interior/library)
+"aaU" = (
+/obj/effect/landmark/spycam_start,
+/turf/open/floor/asteroidfloor/north,
+/area/varadero/exterior/lz1_near)
 "abf" = (
 /obj/structure/pipes/standard/manifold/hidden/green{
 	dir = 4
@@ -2062,7 +2066,7 @@
 	pixel_x = -11;
 	pixel_y = 4
 	},
-/obj/item/paper/research_notes/good{
+/obj/item/paper/research_notes/unique/tier_three{
 	pixel_x = -15;
 	pixel_y = 2
 	},
@@ -6405,6 +6409,7 @@
 /area/varadero/exterior/pontoon_beach)
 "faX" = (
 /obj/structure/closet/secure_closet/engineering_electrical,
+/obj/item/device/defibrillator/synthetic,
 /turf/open/floor/shiva/yellow/north,
 /area/varadero/interior/electrical)
 "fbw" = (
@@ -20777,6 +20782,7 @@
 /area/varadero/interior/maintenance/research)
 "qDs" = (
 /obj/structure/surface/table/reinforced/prison,
+/obj/item/weapon/gun/shotgun/double/sawn,
 /turf/open/floor/shiva/red/southeast,
 /area/varadero/interior/security)
 "qDt" = (
@@ -24116,6 +24122,7 @@
 /turf/open/shuttle/elevator/grating,
 /area/varadero/interior/hall_N)
 "tfc" = (
+/obj/effect/landmark/spycam_start,
 /turf/open/floor/asteroidwarning,
 /area/varadero/exterior/lz2_near)
 "tfj" = (
@@ -43143,7 +43150,7 @@ bZU
 bZU
 xsH
 mrC
-wMw
+aaU
 wMw
 wMw
 wMw

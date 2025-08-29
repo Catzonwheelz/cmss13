@@ -172,6 +172,14 @@
 	},
 /turf/closed/wall/kutjevo/rock,
 /area/kutjevo/interior/oob)
+"aaR" = (
+/obj/effect/landmark/spycam_start,
+/turf/open/auto_turf/sand/layer1,
+/area/kutjevo/exterior/lz_dunes)
+"aaS" = (
+/obj/effect/landmark/spycam_start,
+/turf/open/floor/almayer/research/containment/floor2,
+/area/kutjevo/exterior/lz_pad)
 "aaT" = (
 /obj/structure/flora/grass/tallgrass/desert/corner{
 	dir = 6
@@ -2812,7 +2820,7 @@
 /area/kutjevo/interior/power/comms)
 "dST" = (
 /obj/effect/decal/cleanable/blood,
-/obj/item/weapon/gun/shotgun/pump/dual_tube/cmb,
+/obj/item/weapon/gun/shotgun/double/with_stock,
 /turf/open/floor/kutjevo/tan,
 /area/kutjevo/interior/complex/Northwest_Flight_Control)
 "dTn" = (
@@ -8341,6 +8349,7 @@
 	pixel_x = -2;
 	pixel_y = 5
 	},
+/obj/item/device/defibrillator/synthetic,
 /turf/open/floor/kutjevo/multi_tiles/southeast,
 /area/kutjevo/interior/complex/med/locks)
 "mHJ" = (
@@ -20185,7 +20194,7 @@ ppX
 ppX
 hzN
 wXf
-jGF
+aaS
 dmy
 dmy
 dmy
@@ -20433,7 +20442,7 @@ wGH
 wGH
 prJ
 wGH
-wGH
+aaR
 wGH
 prJ
 wGH

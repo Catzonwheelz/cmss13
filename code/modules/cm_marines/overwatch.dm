@@ -97,6 +97,19 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 	disconnect_holder()
 	return ..()
 
+/obj/structure/machinery/computer/overwatch/groundside_operations/Destroy()
+	for(var/datum/squad/root_squad in GLOB.RoleAuthority.squads)
+		root_squad.release_overwatch()
+		break
+	QDEL_NULL(tacmap)
+	GLOB.active_overwatch_consoles -= src
+	current_orbital_cannon = null
+	concurrent_users = null
+	if(!camera_holder)
+		return ..()
+	disconnect_holder()
+	return ..()
+
 /obj/structure/machinery/computer/overwatch/proc/connect_holder(new_holder)
 	camera_holder = new_holder
 	SEND_SIGNAL(camera_holder, COMSIG_OW_CONSOLE_OBSERVE_START, WEAKREF(src))
@@ -225,8 +238,9 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 			continue //just to be safe
 		var/mob_name = "unknown"
 		var/mob_state = ""
-		var/has_helmet = TRUE
+		var/has_helmet = FALSE
 		var/role = "unknown"
+		var/rank = "unknown"
 		var/acting_sl = ""
 		var/fteam = ""
 		var/distance = "???"
@@ -260,6 +274,7 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 				role = marine_human.job
 			else if(card?.rank) //decapitated marine is mindless,
 				role = card.rank
+			rank = card?.paygrade
 
 			if(current_squad.squad_leader)
 				if(marine_human == current_squad.squad_leader)
@@ -286,8 +301,8 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 				if(DEAD)
 					mob_state = "Dead"
 
-			if(!marine_has_camera(marine_human))
-				has_helmet = FALSE
+			if(marine_has_camera(marine_human))
+				has_helmet = TRUE
 
 			if(!marine_human.key || !marine_human.client)
 				if(marine_human.stat != DEAD)
@@ -347,7 +362,7 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 				if(mob_state != "Dead")
 					marines_alive++
 
-		var/marine_data = list(list("name" = mob_name, "state" = mob_state, "has_helmet" = has_helmet, "role" = role, "acting_sl" = acting_sl, "fteam" = fteam, "distance" = distance, "area_name" = area_name,"ref" = REF(marine)))
+		var/marine_data = list(list("name" = mob_name, "state" = mob_state, "has_helmet" = has_helmet, "role" = role, "acting_sl" = acting_sl, "fteam" = fteam, "distance" = distance, "area_name" = area_name,"ref" = REF(marine), "rank" = rank))
 		data["marines"] += marine_data
 		if(is_squad_leader)
 			if(!data["squad_leader"])
@@ -398,8 +413,10 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 			continue //just to be safe
 		var/mob_name = "unknown"
 		var/mob_state = ""
-		var/has_helmet = TRUE
+		var/has_helmet = FALSE
 		var/role = "unknown"
+		var/rank = "unknown"
+
 		var/area_name = "???"
 		var/mob/living/carbon/human/marine_human
 
@@ -428,6 +445,9 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 			role = marine_human.job
 		else if(card?.rank) //decapitated marine is mindless,
 			role = card.rank
+		rank = card?.paygrade
+
+
 
 		switch(marine_human.stat)
 			if(CONSCIOUS)
@@ -439,8 +459,8 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 			if(DEAD)
 				mob_state = "Dead"
 
-		if(!marine_has_camera(marine_human))
-			has_helmet = FALSE
+		if(marine_has_camera(marine_human))
+			has_helmet = TRUE
 
 		switch(role)
 			if(JOB_CO)
@@ -458,7 +478,7 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 				if(mob_state != "Dead")
 					so_alive++
 
-		var/marine_data = list(list("name" = mob_name, "state" = mob_state, "has_helmet" = has_helmet, "role" = role, "area_name" = area_name, "ref" = REF(marine)))
+		var/marine_data = list(list("name" = mob_name, "state" = mob_state, "has_helmet" = has_helmet, "role" = role, "area_name" = area_name, "ref" = REF(marine), "rank" = rank))
 		data["marines"] += marine_data
 
 	data["total_deployed"] = co_count + xo_count + so_count
@@ -566,14 +586,21 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 	return GLOB.not_incapacitated_and_adjacent_strict_state
 
 /obj/structure/machinery/computer/overwatch/ui_status(mob/user)
-	if(!(isatom(src)))
+
+	if(inoperable())
+		return UI_CLOSE
+
+	if(!ishumansynth_strict(user) || (user.stat == DEAD))
+		return UI_CLOSE
+
+	if((user.stat == UNCONSCIOUS) || !allowed(user))
+		return UI_DISABLED
+
+	if(get_dist(src, user) <= tgui_interaction_distance)
 		return UI_INTERACTIVE
 
-	var/dist = get_dist(src, user)
-	if(dist <= tgui_interaction_distance)
-		return UI_INTERACTIVE
-	else
-		return UI_CLOSE
+	// if none of the above were true, something is very wrong
+	return UI_CLOSE
 
 /obj/structure/machinery/computer/overwatch/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
@@ -764,6 +791,10 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 				return
 			if(current_squad)
 				var/mob/living/carbon/human/cam_target = locate(params["target_ref"])
+
+				if(!istype(cam_target))
+					return
+
 				var/obj/item/new_holder = cam_target.get_camera_holder()
 				var/obj/structure/machinery/camera/new_cam
 				if(new_holder)
@@ -1155,7 +1186,7 @@ GLOBAL_LIST_EMPTY_TYPED(active_overwatch_consoles, /obj/structure/machinery/comp
 
 /obj/structure/machinery/computer/overwatch/on_unset_interaction(mob/user)
 	..()
-	if(!isRemoteControlling(user))
+	if(!isRemoteControlling(user) && concurrent_users)
 		if(cam)
 			user.UnregisterSignal(cam, COMSIG_PARENT_QDELETING)
 		user.reset_view(null)
